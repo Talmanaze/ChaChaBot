@@ -31,9 +31,14 @@ module.exports.run = (client, connection, P, message, args) => {
 
         console.log(sql);
         connection.query(sql, function (err, result) {
-            if (err) throw err;
-            console.log(`Pokemon ${args[0]} :${args[1]} set to ${args[2]}`);
-            message.channel.send(`Pokemon ${args[0]}: ${args[1]} set to ${args[2]}`);
+            if (err) {
+                message.channel.send(err.toString());
+                message.channel.send('ChaCha machine :b:roke, please try again later').catch(console.error);
+            }
+            else {
+                console.log(`Pokemon ${args[0]} :${args[1]} set to ${args[2]}`);
+                message.channel.send(`Pokemon ${args[0]}: ${args[1]} set to ${args[2]}`);
+            }
         });
 
 

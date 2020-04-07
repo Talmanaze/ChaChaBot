@@ -12,6 +12,8 @@ module.exports.run = (client, connection, P, message, args) => {
                         printString += `${element.name} (Level ${element.level} ${element.species}) - Created by ${response.username} [Private: ${element.private}]\n`;
                     })
                     .catch(error => {
+                        message.channel.send(error.toString());
+                        message.channel.send('ChaCha machine :b:roke, please try again later').catch(console.error);
                         console.log(error);
                     }))
                 }
@@ -29,7 +31,9 @@ module.exports.run = (client, connection, P, message, args) => {
             })
             .catch(error =>
             {
-            console.log(error);
+                message.channel.send(error.toString());
+                message.channel.send('ChaCha machine :b:roke, please try again later').catch(console.error);
+                console.log(error);
             });
 
     });

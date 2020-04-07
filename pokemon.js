@@ -60,6 +60,7 @@ function Pokemon(tempSpecies, tempLevel, tempName) {
 Pokemon.prototype.init = function(P, message, logger) {
     this.getPokemonAndSpeciesData(P, logger)
         .then(function (response) {
+
             logger.log({
                 level: 'info',
                 message: 'Retrieved Pokemon and Species Data!'}
@@ -68,7 +69,7 @@ Pokemon.prototype.init = function(P, message, logger) {
 
 
 
-            logger.log("Reading Type(s)");
+
             this.assignTypes(logger);
 
             logger.log("Assigning Gender");
@@ -121,6 +122,9 @@ let modGen = function (abilityScore) {
 
 // grab + stow types
 Pokemon.prototype.assignTypes = function(logger) {
+
+    logger.log("Reading Type(s)");
+
     this.type1 = this.pokemonData.types[0].type.name;
     if(this.pokemonData.types.length === 2) {
         this.type2 = this.pokemonData.types[1].type.name;

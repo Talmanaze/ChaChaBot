@@ -16,12 +16,16 @@ module.exports.run = (client, connection, P, message, args) => {
 
         console.log(sql);
         connection.query(sql, function (err, response) {
-            if (err) throw err;
-
-            tempPoke.loadFromSQL(P, response[0])
-                .then(response => {
-                    message.channel.send(tempPoke.sendSummaryMessage(client));
-                });
+            if (err) {
+                message.channel.send(error.toString());
+                message.channel.send('ChaCha machine :b:roke, please try again later').catch(console.error);
+            }
+            else {
+                tempPoke.loadFromSQL(P, response[0])
+                    .then(response => {
+                        message.channel.send(tempPoke.sendSummaryMessage(client));
+                    });
+            }
         });
 
     } catch (error) {

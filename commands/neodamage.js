@@ -93,7 +93,6 @@ module.exports.run = (client, connection, P, message, args) => {
 
             Promise.all(loadSQLPromise)
                 .then( response => {
-
                     P.getMoveByName(attackerMove.toLowerCase())
                         .then(moveData => {
                             P.getTypeByName(moveData.type.name)
@@ -229,6 +228,10 @@ module.exports.run = (client, connection, P, message, args) => {
                                     message.channel.send(combatEmbedString).catch(console.error);
 
                                 })
+                                .catch(error => {
+                                    message.channel.send(error.toString());
+                                    message.channel.send('ChaCha machine :b:roke, please try again later').catch(console.error);
+                                });
                         });
                 });
         })
