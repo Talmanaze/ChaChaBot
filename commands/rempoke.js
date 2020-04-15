@@ -1,3 +1,1 @@
-module.exports.run = (client, connection, P, message, args) => {
-
-};
+module.exports.run = (client, connection, P, message, args) => {};

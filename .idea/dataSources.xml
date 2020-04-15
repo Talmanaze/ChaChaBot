@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
+    <data-source source="LOCAL" name="pokemon@database-1.cfdhbzk2summ.us-east-1.rds.amazonaws.com" uuid="65e495df-8d63-4905-8863-05c7657a9ce8">
+      <driver-ref>mysql.8</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
+      <jdbc-url>jdbc:mysql://database-1.cfdhbzk2summ.us-east-1.rds.amazonaws.com:3306/pokemon</jdbc-url>
+    </data-source>
+  </component>
+</project>

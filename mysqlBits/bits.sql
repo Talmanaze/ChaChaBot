@@ -36,3 +36,4 @@ CREATE TABLE `pokemon` (
   `userID` int(11) DEFAULT NULL,
   `dateCreated` datetime DEFAULT NULL
 )
+
