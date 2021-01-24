@@ -15,7 +15,7 @@ exports.run = (client, connection, P, message, args) => {
 		logger.info("[movetutor] Sending evolution tip message.")
 		message.channel.send("A Pokémon that has never evolved gains a +5 bonus to this check, \
 			and a Pokémon that has evolved once gains a +2 bonus, since it is easier to learn moves at earlier stages. \
-			However, this only applies if the evolutions can learn the same moves. \
+			However, this only applies if the evolutions can learn the same moves.\
 			If a Pokémon is a middle stage and its previous stage does not learn the move, \
 			it still gains a +5 bonus. The same applies if it is fully evolved. \
 			If it is in a final stage and only the middle stage can learn the moves, \
