@@ -25,18 +25,22 @@ const HELP_MESSAGE = "A damage calculator that uses the Pokemon in the database.
 //  [Attacker (A) Name] [Attacker Move] [Defender (D) Name] [Stages of Attack] [Stages of Defense] [Extra Base Power (min 0)] [MultDamage (min 1)] [Critical Hit (y/n)]
 
 module.exports.run = (client, connection, P, message, args) => {
+  // for logging
+  let serverName = message.channel.guild.name;
+  let channelName = message.channel.name;
+
   try {
 
     //clause for helping!
     if (args[0].includes("help")) {
-      logger.info("[neodamage] Sending help message.");
+      logger.info(`[${serverName}] [${channelName}] [neodamage] Sending help message.`);
       message.reply(HELP_MESSAGE)
         .catch(console.error);
       return;
     }
 
     if (args.length < 3) {
-      logger.info("[neodamage] Sending too few parameters message.");
+      logger.info(`[${serverName}] [${channelName}] [neodamage] Sending too few parameters message.`);
       message.reply("You haven't provided enough parameters, please try again.").catch(console.error);
       return;
     }
@@ -133,7 +137,7 @@ module.exports.run = (client, connection, P, message, args) => {
     // Grabs the SQL entry for both attacking and defending pokemon.
     //
     let sql = `SELECT * FROM pokemon WHERE name = '${attackerName}' OR name = '${defenderName}';`;
-    logger.info(`[neodamage] SQL query: ${sql}`)
+    logger.info(`[${serverName}] [${channelName}] [neodamage] SQL query: ${sql}`)
     //console.log(sql);
 
     let loadSQLPromise = [];
@@ -142,14 +146,14 @@ module.exports.run = (client, connection, P, message, args) => {
     connection.query(sql, function (err, response) {
       if (err) {
         let errMsg = `Error with SQL query: ${err}`;
-        logger.error(errMsg);
+        logger.error(`[${serverName}] [${channelName}] [neodamage] ` + errMsg);
         message.reply(errMsg);
         return;
       };
 
       if (response.length == 0) {
         let errMsg = `Cannot find neither '${attackerName}' nor '${defenderName}'. Please check your spelling + case-sensitivity.`
-        logger.error(errMsg);
+        logger.error(`[${serverName}] [${channelName}] [neodamage] ` + errMsg);
         message.reply(errMsg);
         return;
       }
@@ -162,13 +166,13 @@ module.exports.run = (client, connection, P, message, args) => {
         else if (foundPokeName === defenderName)
           errMsg = `I found the defender '${attackerName}' but not the attacker. Please check your spelling + case-sensitivity.`
 
-        logger.error(errMsg);
+        logger.error(`[${serverName}] [${channelName}] [neodamage] ` + errMsg);
         message.reply(errMsg);
         return;
       }
 
-      logger.info('[neodamage] Attacker: ' + response[0].name + ' retrieved from SQL database.');
-      logger.info('[neodamage] Defender: ' + response[1].name + ' retrieved from SQL database.');
+      logger.info(`[${serverName}] [${channelName}] [neodamage] Attacker: ` + response[0].name + ' retrieved from SQL database.');
+      logger.info(`[${serverName}] [${channelName}] [neodamage] Defender: ` + response[1].name + ' retrieved from SQL database.');
 
       //
       // Load the found pokemon into pokemon objects, then wait til they both complete before continuing.
@@ -388,14 +392,14 @@ module.exports.run = (client, connection, P, message, args) => {
             // comment out embed if necessary
 
             //embed message
-            logger.info("[neodamage] Sending combat embed string.");
+            logger.info(`[${serverName}] [${channelName}] [neodamage] Sending combat embed string.`);
             message.channel.send(combatEmbedString).catch(console.error);
           });
         });
       });
     });
   } catch (error) {
-    logger.error(error);
+    logger.error(`[${serverName}] [${channelName}] [neodamage] ` + error);
     message.channel.send(error.toString());
     message.channel
       .send("ChaCha machine :b:roke, please try again later")
