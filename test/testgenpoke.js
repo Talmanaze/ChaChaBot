@@ -5,9 +5,28 @@ var pokedex = require('pokedex-promise-v2');
 describe('+genpoke', function () {
     describe('help', function () {
         it('should send a help message back to the user, when they use \'+genpoke help\'', function () {
+            //message template
+            const CMD_TEMPLATE = '+genpoke [SPECIES] [LEVEL (1-20)] [NICKNAME - no spaces or special characters] [HIDDEN' +
+                ' ABILITY % (as a number, 0-100)]';
+            //help message
+            const HELP_MESSAGE = '\n' + CMD_TEMPLATE + '\n\n' + 'examples - `+genpoke Pikachu 1 Pika` or `+genpoke Pikachu 1' +
+                ' Pika' +
+                ' 30`' +
+                ' (30% chance to have hidden ability)' +
+                '\n\nCreates a new Pokemon when given the values above, printing it upon completion. \n**Created as private by' +
+                ' default** - use `+modpoke (name) private 0` to make publicly visible/editable\n\n' +
+                '(Hint: You can view an existing Pokemon with `+showpoke [nickname]`, or remove it using `+rempoke [nickname]`';
+
             class dum_msg {
+                channel = {
+                    name: "channel1",
+                    guild: {
+                        name: "guild1"
+                    }
+                };
+
                 reply = function (obj) {
-                    assert.strictEqual(obj, 'New Pokemon Generator. Variables in order:\n [Pokemon Species] [Level] [Pokemon Name] [Hidden Ability % (optional - CURRENTLY BROKEN)]');
+                    assert.strictEqual(obj, HELP_MESSAGE);
                     return Promise.resolve()
                 }
             }
@@ -22,9 +41,13 @@ describe('+genpoke', function () {
         it('should tell the user there are too few arguments when they supply less than 3', function () {
             class dum_channel {
                 send = function (obj) {
-                    assert.strictEqual(obj, "You haven't provided enough arguments. Should be [Pokemon Species] [Level] [Pokemon Name] [Hidden Ability % (optional - CURRENTLY BROKEN)]")
+                    assert.strictEqual(obj, "You haven't provided enough arguments. Should be +genpoke [SPECIES] [LEVEL (1-20)] [NICKNAME - no spaces or special characters] [HIDDEN ABILITY % (as a number, 0-100)]")
                     return Promise.resolve()
                 }
+                guild = {
+                    name: "guild1"
+                }
+                name = "channel1"
             }
 
             class dum_msg {
@@ -44,6 +67,10 @@ describe('+genpoke', function () {
                     assert.strictEqual(obj, 'ChaCha machine :b:roke while attempting to generate a Pokemon, please try again later')
                     return Promise.resolve()
                 }
+                guild = {
+                    name: "guild1"
+                }
+                name = "channel1"
             }
 
             class dum_msg {
@@ -65,6 +92,10 @@ describe('+genpoke', function () {
                     assert.strictEqual(obj.embed.url, `https://bulbapedia.bulbagarden.net/wiki/gastly_(Pok%C3%A9mon)`)
                     assert.strictEqual(obj.embed.description, "Click the link for the Bulbapedia page, or use !data to call info using the Pokedex bot.")
                 }
+                guild = {
+                    name: "guild1"
+                }
+                name = "channel1"
             }
 
             class dum_msg {

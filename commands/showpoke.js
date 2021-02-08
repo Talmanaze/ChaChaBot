@@ -11,9 +11,13 @@ const HELP_MESSAGE = "Displays a Pokemon as it appears in the database. Please d
 const logger = require('../logs/logger.js');
 
 module.exports.run = (client, connection, P, message, args) => {
+    // for logging
+    let serverName = message.channel.guild.name;
+    let channelName = message.channel.name;
+
     try {
         if (args.join(" ").includes("\'")) {
-            logger.warn("[showpoke] User put single quote in command, sending warning.");
+            logger.warn(`[${serverName}] [${channelName}] [showpoke] User put single quote in command, sending warning.`);
             message.reply("Please do not use quotes when using commands.");
             return;
         }
@@ -21,7 +25,7 @@ module.exports.run = (client, connection, P, message, args) => {
         let name = args[0];
 
         if (name === "help") {
-            logger.info("[showpoke] Sending showpoke help message.");
+            logger.info(`[${serverName}] [${channelName}] [showpoke] Sending showpoke help message.`);
             message.channel.send(HELP_MESSAGE);
             return;
         }
@@ -30,7 +34,7 @@ module.exports.run = (client, connection, P, message, args) => {
         let tempPoke = new Pokemon;
 
         let sql = `SELECT * FROM pokemon WHERE name = '${name}';`;
-        logger.info(`[showpoke] SQL query: ${sql}`);
+        logger.info(`[${serverName}] [${channelName}] [showpoke] SQL query: ${sql}`);
 
         let notFoundMessage = name + " not found. Please check that you entered the name properly (case-sensitive) and try again.\n\n(Hint: use `+listpoke` to view the Pokemon you can edit.)";
 
@@ -39,13 +43,13 @@ module.exports.run = (client, connection, P, message, args) => {
             if (err) throw err;
 
             if (response.length == 0) {
-                logger.info("[showpoke] Pokemon not found in database. Please check your spelling, or the Pokemon may not be there.")
+                logger.info(`[${serverName}] [${channelName}] [showpoke] Pokemon not found in database. Please check your spelling, or the Pokemon may not be there.`)
                 message.channel.send("Pokemon not found in database. Please check your spelling, or the Pokemon may not be there.")
             }
             else {
                 // check if the user is allowed to edit the Pokemon. If a Pokemon is private, the user's discord ID must match the Pokemon's creator ID
                 if (response[0].private > 0 && message.author.id !== response[0].discordID) {
-                    logger.info("[modpoke] Detected user attempting to edit private Pokemon that isn't their own.")
+                    logger.info(`[${serverName}] [${channelName}] [modpoke] Detected user attempting to edit private Pokemon that isn't their own.`)
                     // If user found a pokemon that was marked private and belongs to another user, act as if the pokemon doesn't exist in messages
                     message.reply(notFoundMessage);
                     return;
@@ -53,9 +57,7 @@ module.exports.run = (client, connection, P, message, args) => {
 
                 tempPoke.loadFromSQL(P, response[0])
                     .then(response => {
-
-
-                        logger.info("[showpoke] Sending summary message to user.");
+                        logger.info(`[${serverName}] [${channelName}] [showpoke] Sending summary message to user.`);
                         message.channel.send(tempPoke.sendSummaryMessage(client));
 
                     });
@@ -63,7 +65,7 @@ module.exports.run = (client, connection, P, message, args) => {
         });
 
     } catch (error) {
-        logger.error("[showpoke] " + error.toString());
+        logger.error(`[${serverName}] [${channelName}] [showpoke] ` + error.toString());
         message.channel.send(error.toString());
         message.channel.send('ChaCha machine :b:roke, please try again later').catch(console.error);
     }

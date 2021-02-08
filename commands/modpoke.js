@@ -50,29 +50,33 @@ const CODE_FORMAT_END = "\n```"
 module.exports.run = (client, connection, P, message, args) => {
     let Pokemon = require('../models/pokemon.js');
     try {
+        // for logging
+        let serverName = message.channel.guild.name;
+        let channelName = message.channel.name;
+
         if (args[0].match(/[-\/\\^$*+?.()|[\]{}'"\s]/)) {
-            logger.warn("[showpoke] User put special character in pokemon name, sending warning.");
+            logger.warn(`[${serverName}] [${channelName}] [modpoke] User put special character in pokemon name, sending warning.`);
             message.reply("Please do not use special characters when using renaming Pokemon.");
             return;
         }
 
         // if asking for help, print the help message
         if (args[0].includes('help')) {
-            logger.info("[modpoke] Sending help message.");
+            logger.info(`[${serverName}] [${channelName}] [modpoke] Sending help message.`);
             message.reply(HELP_MESSAGE);
             return;
         }
 
         // if looking for the list of arguments, print em
         if (args[0].includes('list')) {
-            logger.info("[modpoke] Sending fields list help message.");
+            logger.info(`[${serverName}] [${channelName}] [modpoke] Sending fields list help message.`);
             message.reply(HELP_FIELDS_LIST);
             return;
         }
 
         //Check if enough args
         if (args.length < 3) {
-            logger.info("[modpoke] Sending too few args message.");
+            logger.info(`[${serverName}] [${channelName}] [modpoke] Sending too few args message.`);
             message.reply(FEWARGS_MESSAGE);
             return;
         }
@@ -91,10 +95,10 @@ module.exports.run = (client, connection, P, message, args) => {
         // ================= SQL statements  =================
         // sql statement to check if the Pokemon exists
         let sqlFindPoke = `SELECT * FROM pokemon WHERE name = '${pokeName}'`;
-        logger.info(`[modpoke] SQL find pokemon query: ${sqlFindPoke}`);
+        logger.info(`[${serverName}] [${channelName}] [modpoke] SQL find pokemon query: ${sqlFindPoke}`);
         // sql statement to update the Pokemon
         let sqlUpdateString = `UPDATE pokemon SET ${valName} = '${valString}' WHERE name = '${pokeName}'`;
-        logger.info(`[modpoke] SQL update string: ${sqlUpdateString}`);
+        logger.info(`[${serverName}] [${channelName}] [modpoke] SQL update string: ${sqlUpdateString}`);
         // not found message
         let notFoundMessage = pokeName + " not found. Please check that you entered the name properly (case-sensitive) and try again.\n\n(Hint: use `+listpoke` to view the Pokemon you can edit.)";
 
@@ -103,23 +107,23 @@ module.exports.run = (client, connection, P, message, args) => {
             // if you're here, the name couldn't be found in the table
             if (err) {
                 let cantAccessSQLMessage = "SQL error, please try again later or contact a maintainer if the issue persists.";
-                logger.error("[modpoke]" + cantAccessSQLMessage + ` ${err}`)
+                logger.error(`[${serverName}] [${channelName}] [modpoke]` + cantAccessSQLMessage + ` ${err}`)
                 message.reply(cantAccessSQLMessage);
                 return;
             } else if (rows.length === 0) {
                 // the pokemon was not found
-                logger.info(`[modpoke] ${pokeName} was not found.`)
+                logger.info(`[${serverName}] [${channelName}] [modpoke] ${pokeName} was not found.`)
                 message.reply(notFoundMessage);
                 return;
             } else {
 
                 // check if the user is allowed to edit the Pokemon. If a Pokemon is private, the user's discord ID must match the Pokemon's creator ID
                 if (rows[0].private > 0 && message.author.id !== rows[0].discordID) {
-                    logger.info("[modpoke] Detected user attempting to edit private Pokemon that isn't their own.")
+                    logger.info(`[${serverName}] [${channelName}] [modpoke] Detected user attempting to edit private Pokemon that isn't their own.`)
                     // If user found a pokemon that was marked private and belongs to another user, act as if the pokemon doesn't exist in messages
                     message.reply(notFoundMessage);
                 } else {
-                    logger.info(`[modpoke] ${pokeName} confirmed to be editable by user. Checking for static/dynamic variable.`);
+                    logger.info(`[${serverName}] [${channelName}] [modpoke] ${pokeName} confirmed to be editable by user. Checking for static/dynamic variable.`);
                     // true/false declaring whether or not the variable is static or not
                     let isStaticVal = false;
 
@@ -132,13 +136,13 @@ module.exports.run = (client, connection, P, message, args) => {
                                 connection.query(sqlUpdateString, function (err, results) {
                                     if (err) {
                                         let errorMessage = "Unable to update static field " + valName + " of " + pokeName;
-                                        logger.error(`[modpoke] ${errorMessage}\n\t${err.toString()}`);
-                                        logger.error("[modpoke] " + err);
+                                        logger.error(`[${serverName}] [${channelName}] [modpoke] ${errorMessage}\n\t${err.toString()}`);
+                                        logger.error(`${serverName}] [${channelName}] [modpoke] ` + err);
                                         message.reply(errorMessage);
                                         reject();
                                     } else {
                                         let successMessage = "**" + pokeName + "'s** " + valName + " has been changed to " + valString + "!";
-                                        logger.info(`[modpoke] ${successMessage}`)
+                                        logger.info(`[${serverName}] [${channelName}] [modpoke] ${successMessage}`)
                                         message.reply(successMessage + "\nNOTE: Any updates to base stats will be overwritten if related variables (such as IVs, EVs, and level) are changed.");
                                         isStaticVal = true;
                                         resolve();
@@ -463,17 +467,17 @@ module.exports.run = (client, connection, P, message, args) => {
                                         // await user reaction
                                         response.awaitReactions(filter, { max: 1, time: 100000 }).then(collected => {
                                             // tell the log
-                                            logger.info(`[modpoke] Collected ${collected.size} reactions.`)
+                                            logger.info(`[${serverName}] [${channelName}] [modpoke] Collected ${collected.size} reactions.`)
                                             // if confirmed, update the poke and alert the user to such
                                             if (collected.first().emoji.name === '✅') {
                                                 // update the pokemon and print confirmation
                                                 tempPoke.updatePokemon(connection, message, rows[0].private).then(function (results) {
                                                     let successString = "Success! " + pokeName + "'s " + valName + " has been changed to " + valString + " and all related stats have been updated.\n\nHint: View Pokemon's stat's using `+showpoke [nickname]`";
-                                                    logger.info(`[modpoke] ${successString}`)
+                                                    logger.info(`[${serverName}] [${channelName}] [modpoke] ${successString}`)
                                                     message.reply(successString);
                                                 }).catch(function (error) {
                                                     message.reply("Error updating SQL for: " + pokeName);
-                                                    logger.error(`[modpoke] Error updating SQL for ${pokeName}`)
+                                                    logger.error(`[${serverName}] [${channelName}] [modpoke] Error updating SQL for ${pokeName}`)
                                                 });
                                             } else {
                                                 // if you're here, the user clicked X
@@ -484,7 +488,7 @@ module.exports.run = (client, connection, P, message, args) => {
                                             // timeout message
                                             let timeoutMessage = "Edits to " + pokeName + " cancelled via timeout.";
                                             // if you're here, the action timed out
-                                            logger.error(`[modpoke] ${timeoutMessage}`);
+                                            logger.error(`[${serverName}] [${channelName}] [modpoke] ${timeoutMessage}`);
                                             message.reply(timeoutMessage);
                                         });
                                     });
@@ -499,12 +503,12 @@ module.exports.run = (client, connection, P, message, args) => {
                                 }).catch(function (error) {
                                     let loadNewPokeMessage = "Error loading new Pokemon to object. Please make sure you've entered a valid field and value.";
                                     message.reply(loadNewPokeMessage);
-                                    logger.error(`[modpoke] ${loadNewPokeMessage}\n\t${error.toString()}`)
+                                    logger.error(`[${serverName}] [${channelName}] [modpoke] ${loadNewPokeMessage}\n\t${error.toString()}`)
                                 });
                             }).catch(function (error) {
                                 let loadOriginalPokeMessage = "Error while attempting to load the original Pokemon to an object.";
                                 message.reply(loadOriginalPokeMessage);
-                                logger.error(`[modpoke] ${loadOriginalPokeMessage}\n\t${error.toString}`)
+                                logger.error(`[${serverName}] [${channelName}] [modpoke] ${loadOriginalPokeMessage}\n\t${error.toString}`)
                             });
                         }
                     });
@@ -514,7 +518,7 @@ module.exports.run = (client, connection, P, message, args) => {
 
 
     } catch (error) {
-        logger.error(`[modpoke] Error while attempting to modify the Pokemon.\n\t${error.toString()}`)
+        logger.error(`[${serverName}] [${channelName}] [modpoke] Error while attempting to modify the Pokemon.\n\t${error.toString()}`)
         message.channel.send(error.toString());
         message.channel.send('Error while attempting to modify the Pokemon.').catch(console.error);
     }

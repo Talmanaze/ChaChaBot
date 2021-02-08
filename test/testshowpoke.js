@@ -13,6 +13,10 @@ describe('+showpoke', function () {
                     assert.strictEqual(obj, HELP_MESSAGE)
                     return Promise.resolve()
                 }
+                guild = {
+                    name: "guild1"
+                }
+                name = "channel1"
             }
 
             class dum_msg {
@@ -35,8 +39,11 @@ describe('+showpoke', function () {
 
             class dum_channel {
                 send = function (obj) {
-
                 }
+                guild = {
+                    name: "guild1"
+                }
+                name = "channel1"
             }
 
             class dum_msg {

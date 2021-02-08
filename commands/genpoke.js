@@ -17,21 +17,24 @@ const HELP_MESSAGE = '\n' + CMD_TEMPLATE + '\n\n' + 'examples - `+genpoke Pikach
 module.exports.run = (client, connection, P, message, args) => {
 
 	let Pokemon = require('../models/pokemon.js');
+	// for logging
+	let serverName = message.channel.guild.name;
+	let channelName = message.channel.name;
 
 	if (args[0] === "help") {
-		logger.info("[genpoke] Sending help message.");
+		logger.info(`[${serverName}] [${channelName}] [genpoke] Sending help message.`);
 		message.reply(HELP_MESSAGE).catch(console.error);
 		return;
 	}
 
 	if (args.length < 3) {
-		logger.info("[genpoke] Sending not enough arguments warning.");
+		logger.info(`[${serverName}] [${channelName}] [genpoke] Sending not enough arguments warning.`);
 		message.channel.send("You haven't provided enough arguments. Should be " + CMD_TEMPLATE)
 		return;
 	}
 
 	if (args[2].match(/[-\/\\^$*+?.()|[\]{}'"\s]/)) {
-		logger.warn("[showpoke] User put special character in pokemon name, sending warning.");
+		logger.warn(`[${serverName}] [${channelName}] [genpoke] User put special character in pokemon name, sending warning.`);
 		message.reply("Please do not use special characters when using generating Pokemon.");
 		return;
 	}
@@ -45,15 +48,15 @@ module.exports.run = (client, connection, P, message, args) => {
 		genPokemon.init(P, message)
 			.then(function (response) {
 				// upload pokemon to database
-				logger.info("[genpoke] Uploading pokemon to database.");
+				logger.info(`[${serverName}][${channelName}][genpoke] Uploading pokemon to database.`);
 				genPokemon.uploadPokemon(connection, message);
 
 				// post embed
-				logger.info("[genpoke] Sending summary message.");
+				logger.info(`[${serverName}] [${channelName}] [genpoke] Sending summary message.`);
 				message.channel.send(genPokemon.sendSummaryMessage(client));
 
 				// alert user that their poke has been added to the database
-				logger.info("[genpoke] Sending upload confirmation and how to remove pokemon.");
+				logger.info(`[${serverName}][${channelName}] [genpoke] Sending upload confirmation and how to remove pokemon.`);
 				message.reply(genPokemon.name + " has been added to the database.\nTo remove it, use this command: `+rempoke " + genPokemon.name + "`");
 			})
 			.catch(function (error) {
@@ -63,7 +66,7 @@ module.exports.run = (client, connection, P, message, args) => {
 	}
 	/* istanbul ignore next */
 	catch (error) {
-		logger.error(error);
+		logger.error(`[${serverName}] [${channelName}] [genpoke] ` + error);
 		message.channel.send('ChaCha machine :b:roke while attempting to generate a Pokemon, please try again later').catch(console.error);
 	}
 
