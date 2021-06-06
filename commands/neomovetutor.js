@@ -35,12 +35,13 @@ exports.run = (client, connection, P, message, args) => {
 					logs.info("[neomovetutor] Response recieved");
 					let workingName = "";
 					let wordArray = args[0].split("_");
+
 					for (let i = 0; i < wordArray.length; i++) {
 						let word = wordArray[i].toLowerCase();
 						workingName += word.replace(word.charAt(0), word.charAt(0).toUpperCase());
 						workingName += " ";
 					}
-					console.log("End of Space manipulation: " + workingName.trim());
+					//console.log("End of Space manipulation: " + workingName.trim());
 					wordArray = workingName.trim().split("-");
 					workingName = "";
 					for (let i = 0; i < wordArray.length; i++) {
@@ -48,13 +49,13 @@ exports.run = (client, connection, P, message, args) => {
 						workingName += word.replace(word.charAt(0), word.charAt(0).toUpperCase());
 						workingName += "-";
 					}
-					console.log("End of - manipulation: " + workingName);
+					//console.log("End of - manipulation: " + workingName);
 					let moveName = workingName.substring(0, workingName.length - 1);
 					if (moveName.indexOf("-") > 0) {
-						console.log("- move detected, checking special cases.");
-						console.log("Move: " + moveName);
+						//console.log("- move detected, checking special cases.");
+						//console.log("Move: " + moveName);
 						if (moveName.toLowerCase() === "u-turn") {
-							console.log("U-turn detected.");
+							//console.log("U-turn detected.");
 							moveName = "U-turn";
 						}
 						if (moveName.toLowerCase() === "v-create") {
@@ -63,7 +64,12 @@ exports.run = (client, connection, P, message, args) => {
 						if (moveName.toLowerCase() === "trick-or-treat") {
 							moveName = "Trick-or-Treat";
                         }
-                    }
+					}
+					if (args.length > 1) {
+						for (let i = 1; i < args.length; i++) {
+							moveName += " " + args[i];
+						}
+					}
 					//moveName = moveName.replace("_", " ");					
 					//var selectorString = ":contains('" + moveName + "')";
 					//console.log(response);
@@ -95,9 +101,8 @@ exports.run = (client, connection, P, message, args) => {
 							for(let i = 0; i < DCs.length; i++){
 								DCs[i] += dcAdjust;
 							}
-							logs.info("[neomovetutro] Displaying results");
-							output += "**" + moveName + " Training**\n\n";
 							logs.info("[neomovetutor] Displaying results");
+							output += "**" + moveName + " Training**\n\n";
 							output += "**Out of Combat Checks** (Checks 1-3)\n";
 							output += "Use your trainer's cha modifier for these checks.\n";
 							output += "```First DC: " + DCs[0] + ", " + "Second DC: " + DCs[1] + ", " + "Third DC: " + DCs[2] + "```\n\n";
